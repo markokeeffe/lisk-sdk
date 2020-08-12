@@ -2,7 +2,7 @@ The Lisk Elements transactions package provides functions for creating transacti
 
 ## Installation
 
-```
+```bash
 $ npm install @liskhq/lisk-transactions
 ```
 
@@ -10,6 +10,6 @@ $ npm install @liskhq/lisk-transactions
 
 To perform an upgrade, execute the following command:
 
-```
+```bash
 $ npm update @liskhq/lisk-transactions
 ```
