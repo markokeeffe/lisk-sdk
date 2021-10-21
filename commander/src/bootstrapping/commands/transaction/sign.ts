@@ -25,13 +25,14 @@ import {
 	encodeTransaction,
 	getApiClient,
 	transactionToJSON,
-	getAssetSchema,
+	getParamsSchema,
 } from '../../../utils/transaction';
 import { getDefaultPath } from '../../../utils/path';
 import { isApplicationRunning } from '../../../utils/application';
 import { PromiseResolvedType } from '../../../types';
 
-interface KeysAsset {
+interface AuthAccount {
+	nonce: string;
 	mandatoryKeys: Array<Readonly<string>>;
 	optionalKeys: Array<Readonly<string>>;
 }
@@ -61,10 +62,10 @@ const signTransaction = async (
 ) => {
 	const transactionObject = decodeTransaction(registeredSchema, transactionHexStr);
 	// eslint-disable-next-line @typescript-eslint/ban-types
-	const assetSchema = getAssetSchema(
+	const assetSchema = getParamsSchema(
 		registeredSchema,
 		transactionObject.moduleID as number,
-		transactionObject.assetID as number,
+		transactionObject.commandID as number,
 	) as object;
 	const networkIdentifierBuffer = Buffer.from(networkIdentifier as string, 'hex');
 	const passphrase = flags.passphrase ?? (await getPassphraseFromPrompt('passphrase', true));
@@ -148,10 +149,11 @@ const signTransactionOnline = async (
 	}
 
 	// Sign multi-sig transaction
-	const account = (await client.account.get(address)) as { keys: KeysAsset };
-	let keysAsset: KeysAsset;
-	if (account.keys?.mandatoryKeys.length === 0 && account.keys?.optionalKeys.length === 0) {
-		keysAsset = transactionObject.asset as KeysAsset;
+
+	const account = await client.invoke<AuthAccount>('auth_getAuthAccount', { address: address.toString('hex')});
+	let keysAsset: AuthAccount;
+	if (account.mandatoryKeys.length === 0 && account.optionalKeys.length === 0) {
+		keysAsset = transactionObject.params as AuthAccount;
 	} else {
 		keysAsset = account.keys;
 	}

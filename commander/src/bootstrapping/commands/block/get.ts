@@ -24,6 +24,7 @@ interface BlockType<T = Buffer | string> {
 		version: number;
 		asset: Record<string, unknown>;
 	};
+	assets: string[];
 	payload: {
 		[key: string]: unknown;
 		id?: T;
@@ -65,7 +66,7 @@ export abstract class GetCommand extends BaseIPCClientCommand {
 				block = await this._client.block.get(Buffer.from(input, 'hex'));
 			}
 
-			this.printJSON(this._client.block.toJSON((block as unknown) as BlockType));
+			this.printJSON(this._client.block.toJSON(block as unknown as BlockType));
 		} catch (errors) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const errorMessage = Array.isArray(errors)
