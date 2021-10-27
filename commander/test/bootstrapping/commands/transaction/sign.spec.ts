@@ -20,11 +20,10 @@ import { codec } from '@liskhq/lisk-codec';
 import * as Config from '@oclif/config';
 
 import {
-	tokenTransferAssetSchema,
-	keysRegisterAssetSchema,
+	tokenTransferParamsSchema,
+	keysRegisterParamsSchema,
+	dposVoteParamsSchema,
 	networkIdentifierStr,
-	dposVoteAssetSchema,
-	accountSchema,
 } from '../../../helpers/transactions';
 import * as appUtils from '../../../../src/utils/application';
 import * as readerUtils from '../../../../src/utils/reader';
@@ -32,21 +31,21 @@ import { SignCommand } from '../../../../src/bootstrapping/commands/transaction/
 import { getConfig } from '../../../helpers/config';
 
 describe('transaction:sign command', () => {
-	const transactionsAssets = [
+	const commands = [
 		{
 			moduleID: 2,
-			assetID: 0,
-			schema: tokenTransferAssetSchema,
+			commandID: 0,
+			schema: tokenTransferParamsSchema,
 		},
 		{
 			moduleID: 4,
-			assetID: 0,
-			schema: keysRegisterAssetSchema,
+			commandID: 0,
+			schema: keysRegisterParamsSchema,
 		},
 		{
 			moduleID: 5,
-			assetID: 1,
-			schema: dposVoteAssetSchema,
+			commandID: 1,
+			schema: dposVoteParamsSchema,
 		},
 	];
 
@@ -57,7 +56,7 @@ describe('transaction:sign command', () => {
 			data: 'send token',
 			recipientAddress: 'ab0041a7d3f7b2c290b5b834d46bdc7b7eb85815',
 		},
-		assetID: 0,
+		commandID: 0,
 		fee: '100000000',
 		moduleID: 2,
 		nonce: '0',
@@ -151,8 +150,7 @@ describe('transaction:sign command', () => {
 			disconnect: jest.fn(),
 			schemas: {
 				transaction: transactionSchema,
-				transactionsAssets,
-				account: accountSchema,
+				commands,
 			},
 			transaction: {
 				sign: jest.fn().mockReturnValue(mockJSONTransaction),
@@ -160,7 +158,7 @@ describe('transaction:sign command', () => {
 				toJSON: jest.fn().mockReturnValue(mockJSONTransaction),
 				decode: jest.fn().mockImplementation(val => {
 					const root = codec.decode<Record<string, unknown>>(transactionSchema, val);
-					const asset = codec.decode(transactionsAssets[0].schema, root.asset as Buffer);
+					const asset = codec.decode(commands[0].schema, root.asset as Buffer);
 					return { ...root, asset };
 				}),
 			},
@@ -169,22 +167,12 @@ describe('transaction:sign command', () => {
 					networkIdentifier: '873da85a2cee70da631d90b0f17fada8c3ac9b83b2613f4ca5fddd374d1034b3',
 				}),
 			},
-			account: {
-				get: jest.fn().mockResolvedValue({
-					address: Buffer.from('ab0041a7d3f7b2c290b5b834d46bdc7b7eb85815', 'hex'),
-					token: {
-						balance: BigInt('100000000'),
-					},
-					sequence: {
-						nonce: BigInt(0),
-					},
-					keys: {
-						numberOfSignatures: 0,
-						mandatoryKeys: [],
-						optionalKeys: [],
-					},
-				}),
-			},
+			invoke: jest.fn().mockResolvedValue({
+				nonce: BigInt(0),
+				numberOfSignatures: 0,
+				mandatoryKeys: [],
+				optionalKeys: [],
+			}),
 		} as never);
 	});
 
@@ -264,7 +252,7 @@ describe('transaction:sign command', () => {
 					transaction: {
 						id: '3d80c03f99124d15202d9d8d077a1b8acd4ca21e182fb4b1d1c67865d9cb3b8a',
 						moduleID: 2,
-						assetID: 0,
+						commandID: 0,
 						nonce: '2',
 						fee: '100000000',
 						senderPublicKey: '0b211fce4b615083701cb8a8c99407e464b2f9aa4f367095322de1b77e5fcfbe',
@@ -364,7 +352,7 @@ describe('transaction:sign command', () => {
 					transaction: {
 						id: 'ee6e9287499f92e47dc282824c12736c892a13375eb8e8606b2a4ed8a7cf439f',
 						moduleID: 4,
-						assetID: 0,
+						commandID: 0,
 						nonce: '2',
 						fee: '100000000',
 						senderPublicKey: '0b211fce4b615083701cb8a8c99407e464b2f9aa4f367095322de1b77e5fcfbe',
@@ -461,7 +449,7 @@ describe('transaction:sign command', () => {
 								data: 'send token',
 								recipientAddress: 'ab0041a7d3f7b2c290b5b834d46bdc7b7eb85815',
 							},
-							assetID: 0,
+							commandID: 0,
 							fee: '100000000',
 							moduleID: 2,
 							nonce: '2',
@@ -591,7 +579,7 @@ describe('transaction:sign command', () => {
 					transaction: {
 						id: 'ee6e9287499f92e47dc282824c12736c892a13375eb8e8606b2a4ed8a7cf439f',
 						moduleID: 4,
-						assetID: 0,
+						commandID: 0,
 						nonce: '2',
 						fee: '100000000',
 						senderPublicKey: '0b211fce4b615083701cb8a8c99407e464b2f9aa4f367095322de1b77e5fcfbe',
@@ -688,7 +676,7 @@ describe('transaction:sign command', () => {
 								data: 'send token',
 								recipientAddress: 'ab0041a7d3f7b2c290b5b834d46bdc7b7eb85815',
 							},
-							assetID: 0,
+							commandID: 0,
 							fee: '100000000',
 							moduleID: 2,
 							nonce: '2',

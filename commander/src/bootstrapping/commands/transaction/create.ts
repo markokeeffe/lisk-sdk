@@ -257,7 +257,7 @@ export abstract class CreateCommand extends Command {
 
 		const incompleteTransaction = {
 			moduleID: Number(args.moduleID),
-			commandID: Number(args.paramsID),
+			commandID: Number(args.commandID),
 			fee: BigInt(args.fee),
 			nonce: BigInt(0),
 			senderPublicKey: Buffer.alloc(0),
