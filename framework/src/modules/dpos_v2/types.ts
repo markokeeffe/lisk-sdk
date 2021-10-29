@@ -32,6 +32,7 @@ export interface ModuleConfig {
 	bftThreshold: number;
 	minWeightStandby: number;
 	numberActiveDelegates: number;
+	numberStandbyDelegates: number;
 	tokenIDDPoS: TokenIDDPoS;
 }
 
@@ -77,7 +78,6 @@ export interface TokenAPI {
 		amount: bigint,
 	): Promise<void>;
 }
-
 export interface UnlockingObject {
 	readonly delegateAddress: Buffer;
 	readonly amount: bigint;
@@ -147,4 +147,24 @@ export interface VoteTransactionParams {
 export interface VoteCommandDependencies {
 	tokenIDDPoS: TokenIDDPoS;
 	tokenAPI: TokenAPI;
+}
+
+export interface PreviousTimestampData {
+	timestamp: number;
+}
+
+export interface GenesisData {
+	height: number;
+	initRounds: number;
+	initDelegates: Buffer[];
+}
+
+export interface DelegateWeightSnapshot {
+	delegateAddress: Buffer;
+	delegateWeight: bigint;
+}
+
+export interface SnapshotData {
+	activeDelegates: Buffer[];
+	delegateWeightSnapshot: DelegateWeightSnapshot[];
 }

@@ -120,6 +120,7 @@ export const nameStoreSchema = {
 };
 
 export const snapshotStoreSchema = {
+	$id: '/dpos/snapshot',
 	type: 'object',
 	required: ['activeDelegates', 'delegateWeightSnapshot'],
 	properties: {
@@ -150,6 +151,7 @@ export const snapshotStoreSchema = {
 };
 
 export const genesisDataStoreSchema = {
+	$id: '/dpos/genesis',
 	type: 'object',
 	required: ['height', 'initRounds', 'initDelegates'],
 	properties: {
@@ -170,6 +172,7 @@ export const genesisDataStoreSchema = {
 };
 
 export const previousTimestampStoreSchema = {
+	$id: '/dpos/previousTimestamp',
 	type: 'object',
 	required: ['timestamp'],
 	properties: {
@@ -315,6 +318,9 @@ export const configSchema = {
 		numberActiveDelegates: {
 			dataType: 'uint32',
 		},
+		numberStandbyDelegates: {
+			dataType: 'uint32',
+		},
 		tokenIDDPoS: {
 			type: 'object',
 			properties: {
@@ -340,6 +346,7 @@ export const configSchema = {
 		'bftThreshold',
 		'minWeightStandby',
 		'numberActiveDelegates',
+		'numberStandbyDelegates',
 		'tokenIDDPoS',
 	],
 };
