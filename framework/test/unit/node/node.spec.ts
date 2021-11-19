@@ -15,7 +15,6 @@
 import { InMemoryKVStore, KVStore } from '@liskhq/lisk-db';
 import { Node } from '../../../src/node/node';
 import { nodeOptions } from '../../fixtures/node';
-import { createGenesisBlock } from '../../../src/testing/create_genesis_block';
 import { InMemoryChannel } from '../../../src/controller';
 import { fakeLogger } from '../../utils/node';
 import { BaseAPI, BaseCommand, BaseEndpoint, BaseModule } from '../../../src';
@@ -49,8 +48,6 @@ describe('Node', () => {
 	let forgerDB: KVStore;
 	let nodeDB: KVStore;
 	let sampleNodeModule: SampleNodeModule;
-
-	const { genesisBlock } = createGenesisBlock({});
 
 	beforeEach(() => {
 		// Arrange
@@ -108,6 +105,7 @@ describe('Node', () => {
 			jest.spyOn(node['_consensus'], 'init');
 			jest.spyOn(node['_consensus'].events, 'on');
 			jest.spyOn(sampleNodeModule, 'init');
+			const genesisBlock = await node.generateGenesisBlock({ assets: [] });
 			await node.init({
 				channel,
 				blockchainDB,
@@ -324,6 +322,7 @@ describe('Node', () => {
 			jest.spyOn(node['_chain'], 'loadLastBlocks').mockResolvedValue();
 			jest.spyOn(node['_network'], 'start');
 			jest.spyOn(node['_generator'], 'start');
+			const genesisBlock = await node.generateGenesisBlock({ assets: [] });
 			await node.init({
 				channel,
 				blockchainDB,

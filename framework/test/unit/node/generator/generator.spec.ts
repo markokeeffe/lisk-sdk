@@ -477,7 +477,12 @@ describe('generator', () => {
 		});
 
 		it('should call all hooks', async () => {
-			const block = await generator['_generateBlock'](generatorAddress, keypair, currentTime);
+			const block = await generator.generateBlock({
+				generatorAddress,
+				timestamp: currentTime,
+				privateKey: keypair.privateKey,
+				height: 2,
+			});
 			expect(mod1.initBlock).toHaveBeenCalledTimes(1);
 			expect(mod2.sealBlock).toHaveBeenCalledTimes(1);
 			expect(stateMachine.beforeExecuteBlock).toHaveBeenCalledTimes(1);
@@ -489,20 +494,36 @@ describe('generator', () => {
 		});
 
 		it('should have finalizedHeight in the context', async () => {
-			await generator['_generateBlock'](generatorAddress, keypair, currentTime);
+			await generator.generateBlock({
+				generatorAddress,
+				timestamp: currentTime,
+				privateKey: keypair.privateKey,
+				height: 2,
+			});
+
 			expect((mod1.initBlock as jest.Mock).mock.calls[0][0].getFinalizedHeight()).toEqual(100);
 			expect((mod2.sealBlock as jest.Mock).mock.calls[0][0].getFinalizedHeight()).toEqual(100);
 		});
 
 		it('should assign validatorsHash to the block', async () => {
-			const block = await generator['_generateBlock'](generatorAddress, keypair, currentTime);
+			const block = await generator.generateBlock({
+				generatorAddress,
+				timestamp: currentTime,
+				privateKey: keypair.privateKey,
+				height: 2,
+			});
 
 			expect(block.header.validatorsHash).toEqual(validatorsHash);
 		});
 
 		it('should assign assetRoot to the block', async () => {
 			jest.spyOn(BlockAssets.prototype, 'getRoot').mockResolvedValue(assetHash);
-			const block = await generator['_generateBlock'](generatorAddress, keypair, currentTime);
+			const block = await generator.generateBlock({
+				generatorAddress,
+				timestamp: currentTime,
+				privateKey: keypair.privateKey,
+				height: 2,
+			});
 
 			expect(block.header.assetsRoot).toEqual(assetHash);
 		});
