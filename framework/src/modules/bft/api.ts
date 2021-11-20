@@ -207,7 +207,8 @@ export class BFTAPI extends BaseAPI {
 		const nextHeight =
 			bftVotes.blockBFTInfos.length > 0
 				? bftVotes.blockBFTInfos[0].height + 1
-				: bftVotes.maxHeightPrevoted + 1;
+				: // TODO: check with research team
+				  bftVotes.maxHeightPrevoted;
 
 		const nextHeightBytes = intToBuffer(nextHeight, 4, BIG_ENDIAN);
 		await paramsStore.setWithSchema(nextHeightBytes, bftParams, bftParametersSchema);

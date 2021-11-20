@@ -110,6 +110,7 @@ export class Node {
 			consensus: this._consensus,
 			generator: this._generator,
 		});
+		this._bftModule.addDependencies(this._validatorsModule.api);
 		this._stateMachine.registerSystemModule(this._validatorsModule);
 		this._stateMachine.registerSystemModule(this._bftModule);
 		this._generator.registerModule(this._validatorsModule);

@@ -317,7 +317,6 @@ export class BlockHeader {
 
 	private _resetComputedValues() {
 		this._id = undefined;
-		this._signature = undefined;
 	}
 
 	private _getSigningProps() {

@@ -17,6 +17,7 @@ import { objects } from '@liskhq/lisk-utils';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import { join } from 'path';
+import { Block, BlockAssets } from '@liskhq/lisk-chain';
 import { BaseChannel, BasePlugin } from '../../src';
 import { Application } from '../../src/application';
 import { Bus } from '../../src/controller/bus';
@@ -27,6 +28,7 @@ import { Node } from '../../src/node';
 import { systemDirs } from '../../src/system_dirs';
 import * as basePluginModule from '../../src/plugins/base_plugin';
 import * as networkConfig from '../fixtures/config/devnet/config.json';
+import { createFakeBlockHeader } from '../fixtures';
 
 jest.mock('fs-extra');
 jest.mock('zeromq', () => {
@@ -289,9 +291,9 @@ describe('Application', () => {
 			// jest.spyOn(IPCServer.prototype, 'start').mockResolvedValue();
 			jest.spyOn(Bus.prototype, 'publish').mockResolvedValue(jest.fn() as never);
 			jest.spyOn(WSServer.prototype, 'start').mockResolvedValue(jest.fn() as never);
+			jest.spyOn(app['_node']['_stateMachine'], 'executeGenesisBlock').mockResolvedValue();
 
-			const genesis = await app.generateGenesisBlock({ assets: [] });
-			await app.run(genesis);
+			await app.run(new Block(createFakeBlockHeader(), [], new BlockAssets()));
 
 			dirs = systemDirs(app.config.label, app.config.rootPath);
 		});
@@ -335,9 +337,9 @@ describe('Application', () => {
 			jest.spyOn(fs, 'readdirSync').mockReturnValue(fakeSocketFiles);
 			jest.spyOn(Bus.prototype, 'publish').mockResolvedValue(jest.fn() as never);
 			jest.spyOn(fs, 'unlink').mockResolvedValue();
+			jest.spyOn(app['_node']['_stateMachine'], 'executeGenesisBlock').mockResolvedValue();
 
-			const genesis = await app.generateGenesisBlock({ assets: [] });
-			await app.run(genesis);
+			await app.run(new Block(createFakeBlockHeader(), [], new BlockAssets()));
 			await app.shutdown();
 		});
 
@@ -365,8 +367,10 @@ describe('Application', () => {
 			jest.spyOn(Bus.prototype, 'publish').mockResolvedValue(jest.fn() as never);
 			({ app } = Application.defaultApplication(config));
 			jest.spyOn(app['_node']['_network'], 'start').mockResolvedValue();
-			const genesisBlock = await app.generateGenesisBlock({ assets: [] });
-			await app.run(genesisBlock);
+			jest.spyOn(app['_node']['_stateMachine'], 'executeGenesisBlock').mockResolvedValue();
+
+			await app.run(new Block(createFakeBlockHeader(), [], new BlockAssets()));
+
 			jest.spyOn(fs, 'readdirSync').mockReturnValue(fakeSocketFiles);
 			nodeCleanupSpy = jest.spyOn(app['_node'], 'stop').mockResolvedValue();
 			jest.spyOn(app['_controller'], 'stop');
