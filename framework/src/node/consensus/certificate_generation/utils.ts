@@ -56,8 +56,8 @@ export const verifySingleCertificateSignature = (
 
 export const verifyAggregateCertificateSignature = (
 	keysList: Buffer[],
-	weights: number[],
-	threshold: number,
+	weights: number[] | bigint[],
+	threshold: number | bigint,
 	networkIdentifier: Buffer,
 	certificate: Certificate,
 ): boolean => {
@@ -84,4 +84,18 @@ export const verifyAggregateCertificateSignature = (
 		weights,
 		threshold,
 	);
+};
+
+export const getSortedWeightsAndValidatorKeys = (
+	validatorKeysWithWeightsParam: {
+		weight: bigint;
+		blsKey: Buffer;
+	}[],
+) => {
+	const validatorKeysWithWeights = validatorKeysWithWeightsParam.map(o => ({ ...o }));
+	validatorKeysWithWeights.sort((a, b) => a.blsKey.compare(b.blsKey));
+	const weights = validatorKeysWithWeights.map(item => item.weight);
+	const validatorKeys = validatorKeysWithWeights.map(item => item.blsKey);
+
+	return { weights, validatorKeys };
 };
