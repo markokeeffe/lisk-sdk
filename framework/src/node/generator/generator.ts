@@ -321,7 +321,7 @@ export class Generator {
 		await stateStore.finalize(db.batch(), smt);
 
 		const apiContext = createAPIContext({ stateStore, eventQueue });
-		const bftParams = await this._bftAPI.getBFTParameters(apiContext, height);
+		const bftParams = await this._bftAPI.getBFTParameters(apiContext, height + 1);
 		header.stateRoot = smt.rootHash;
 		header.validatorsHash = bftParams.validatorsHash;
 
@@ -595,7 +595,7 @@ export class Generator {
 		// Assign root hash calculated in SMT to state root of block header
 		blockHeader.stateRoot = smt.rootHash;
 		// Set validatorsHash
-		const { validatorsHash } = await this._bftAPI.getBFTParameters(apiContext, height);
+		const { validatorsHash } = await this._bftAPI.getBFTParameters(apiContext, height + 1);
 		blockHeader.validatorsHash = validatorsHash;
 		blockHeader.sign(this._chain.networkIdentifier, privateKey);
 
